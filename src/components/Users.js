@@ -20,7 +20,14 @@ const Users = () => {
         });
         setUsers(response.data);
       } catch (err) {
-        toast.error("Failed to fetch users:", err);
+        if (!err?.response) {
+          toast.error("Failed to fetch users due to a network error.");
+        } else {
+          toast.error(
+            "Failed to fetch users: " + err.response?.data?.message ||
+              "Unknown error",
+          );
+        }
       } finally {
         setLoading(false);
       }

@@ -3,32 +3,43 @@ import axiosInstance from "../utils/AxiosInstance";
 import Table from "./Table";
 import { toast } from "react-toastify";
 import { getAuthToken } from "../utils/auth";
+import { useLoading } from "../utils/LoadingContext";
 
 const Recipes = () => {
   const [recipes, setRecipes] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
+  const { setLoading } = useLoading();
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const token = localStorage.getItem("jwtToken");
+        setLoading(true);
         const response = await axiosInstance.get(
           `/recipe-api?pageNumber=${currentPage}&limit=10`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${getAuthToken()}`,
             },
           },
         );
         setRecipes(response.data);
         console.log(response);
       } catch (err) {
-        console.error("Failed to fetch recipes:", err);
+        if (!err?.response) {
+          toast.error("Failed to fetch recipes due to a network error.");
+        } else {
+          toast.error(
+            "Failed to fetch recipes: " + err.response?.data?.message ||
+              "Unknown error",
+          );
+        }
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchRecipes();
-  }, [currentPage]);
+  }, [currentPage, setLoading]);
 
   const handlePageChange = (page) => {
     if (page >= 0) {
