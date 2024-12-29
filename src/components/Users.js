@@ -43,6 +43,7 @@ const Users = () => {
     if (!confirmDelete) return;
 
     try {
+      setLoading(true);
       await axiosInstance.delete(`/user-api/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${getAuthToken()}`,
@@ -55,6 +56,8 @@ const Users = () => {
       toast.error("Failed to delete user. Please try again.", {
         position: "bottom-right",
       });
+    } finally {
+      setLoading(false);
     }
   };
 

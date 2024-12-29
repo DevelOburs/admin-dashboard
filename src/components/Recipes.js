@@ -54,6 +54,7 @@ const Recipes = () => {
     if (!confirmDelete) return;
 
     try {
+      setLoading(true);
       await axiosInstance.delete(`/recipe-api/${id}`, {
         headers: {
           Authorization: `Bearer ${getAuthToken()}`,
@@ -69,6 +70,8 @@ const Recipes = () => {
       toast.error("Failed to delete recipe. Please try again.", {
         position: "bottom-right",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -106,7 +109,7 @@ const Recipes = () => {
         >
           Previous
         </button>
-        <span>Page {currentPage}</span>
+        <span>Page {currentPage + 1}</span>
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           class="paginationButton"

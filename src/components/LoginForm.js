@@ -5,11 +5,13 @@ import { useNavigate } from "react-router-dom";
 import styles from "../styles/LoginForm.module.css";
 import { setAuthToken } from "../utils/auth";
 import axiosInstance from "../utils/AxiosInstance";
+import { useLoading } from "../utils/LoadingContext";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { setLoading } = useLoading();
 
   const onLoginSuccess = (token) => {
     toast.success("Login successful!", { position: "bottom-right" });
@@ -23,6 +25,7 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
+      setLoading(true);
       const response = await axiosInstance.post("auth-api/login", {
         username,
         password,
@@ -36,6 +39,8 @@ const LoginForm = () => {
         position: "bottom-right",
       });
       console.error("Login error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
